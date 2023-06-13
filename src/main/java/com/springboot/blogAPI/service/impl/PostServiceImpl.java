@@ -1,6 +1,7 @@
 package com.springboot.blogAPI.service.impl;
 
 import com.springboot.blogAPI.dto.PostDto;
+import com.springboot.blogAPI.errorExceptions.ResourceNotFoundException;
 import com.springboot.blogAPI.model.Post;
 import com.springboot.blogAPI.repository.PostRepository;
 import com.springboot.blogAPI.service.PostService;
@@ -62,6 +63,34 @@ public class PostServiceImpl implements PostService {
 
     }
 
+    @Override
+    public PostDto getOnePost(Long id) {
+
+         Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post", "Id", id));
+        return convertToDTO(post);
+    }
+
+    @Override
+    public PostDto updatePost(PostDto postDto, Long id) {
+
+        Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post", "Id", id));
+
+        post.setTitle(postDto.getTitle());
+        post.setDescription(postDto.getDescription());
+        post.setContent(postDto.getContent());
+
+        Post updatedPost = postRepository.save(post);
+        return convertToDTO(updatedPost);
+    }
+
+    @Override
+    public String deletePost(Long id) {
+
+       Post post = postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Post", "Id", id));
+        postRepository.delete(post);
+
+        return "Deleted Post Successfully";
+    }
 
 
 }
